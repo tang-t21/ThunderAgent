@@ -4,7 +4,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    UV_SYSTEM_PYTHON=1 \
+    VIRTUAL_ENV=/opt/venv \
+    PATH=/opt/venv/bin:${PATH} \
     HF_HOME=/workspace/.cache/huggingface \
     VLLM_WORKER_MULTIPROC_METHOD=spawn
 
@@ -39,11 +40,12 @@ COPY pyproject.toml README.md /workspace/ThunderAgent/
 COPY ThunderAgent /workspace/ThunderAgent/ThunderAgent
 COPY examples/inference/mini-swe-agent /workspace/ThunderAgent/examples/inference/mini-swe-agent
 
-RUN python -m pip install --upgrade pip setuptools wheel uv && \
-    uv pip install --system -e . && \
-    uv pip install --system vllm --torch-backend=auto && \
-    uv pip install --system -e examples/inference/mini-swe-agent && \
-    uv pip install --system datasets huggingface_hub
+RUN python -m venv "${VIRTUAL_ENV}" && \
+    "${VIRTUAL_ENV}/bin/python" -m pip install --upgrade pip setuptools wheel uv && \
+    uv pip install --python "${VIRTUAL_ENV}/bin/python" -e . && \
+    uv pip install --python "${VIRTUAL_ENV}/bin/python" vllm --torch-backend=auto && \
+    uv pip install --python "${VIRTUAL_ENV}/bin/python" -e examples/inference/mini-swe-agent && \
+    uv pip install --python "${VIRTUAL_ENV}/bin/python" datasets huggingface_hub
 
 EXPOSE 8000 8100
 
