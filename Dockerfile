@@ -9,8 +9,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HF_HOME=/workspace/.cache/huggingface \
     VLLM_WORKER_MULTIPROC_METHOD=spawn
 
-RUN export http_proxy=http://10.51.6.1:6890 \
-    export https_proxy=http://10.51.6.1:6890
+ENV http_proxy=http://10.51.6.1:6890 \
+    https_proxy=http://10.51.6.1:6890
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
